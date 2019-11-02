@@ -5,7 +5,7 @@ import http.server
 import cgi
 from colorama import Fore, Back, Style
 
-PORT = 8088
+PORT = 8080
 """
 Authors: Jordan Sosnowski and John Osho
 Date: November 1, 2019

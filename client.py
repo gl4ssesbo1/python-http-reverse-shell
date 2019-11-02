@@ -5,7 +5,7 @@ import subprocess
 import time
 import requests
 import os
-IP = 'http://' + '192.168.1.159' + ':8088'
+IP = 'http://' + '192.168.1.159' + ':8080'
 
 """
 Authors: Jordan Sosnowski and John Osho
