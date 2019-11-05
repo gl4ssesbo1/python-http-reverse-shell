@@ -3,7 +3,7 @@ import subprocess
 import time
 import requests
 import os
-IP = 'http://' + 'localhost' + ':8088'
+IP = 'http://' + '172.19.66.82' + ':8088'
 
 while True:
 
