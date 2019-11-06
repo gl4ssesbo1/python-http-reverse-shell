@@ -2,6 +2,8 @@
 
 Ethical Hacking Class Project: HTTP Reverse Shell
 
+This is for educational purposes only!
+
 ## Setup
 
 * Install dependencies `pip3 install -r requirements.txt`
@@ -30,3 +32,15 @@ The client has three special command paths:
   * Takes one parameter, the path of the file to be exported
     * i.e. `^ /etc/hosts`
   * TODO: allow multiple files to be exported
+
+
+Sending initial command (tcp.stream eq 2)
+    handshake              -> packet no. 184 - 186
+    victim sends get       -> packet no. 187
+    attacker sends !       -> packet no. 191
+
+Sending file            (tcp.stream eq 7)
+    handshake              -> packet no. 759 - 761
+    file download start    -> packet no. 762
+    file download ends     -> packet no. 36751
+    attacker confirms file -> packet no. 36761
