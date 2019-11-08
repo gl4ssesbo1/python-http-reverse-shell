@@ -38,8 +38,7 @@ def pull_registry():
             os.remove(filenamepath)
 
     # path to zip file containing reg keys, start with `^ `
-    exp_cmd = f'^ ./{zipfile}'
-    send_file(exp_cmd)
+    send_file(f'^ ./{zipfile}')
 
     os.remove(f'./{zipfile}')
 
