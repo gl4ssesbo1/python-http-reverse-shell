@@ -1,14 +1,3 @@
----
-title: "HTTP Reverse Shell Report"
-author: [Jordan Sosnowski, John Osho]
-date: "2019-11-08"
-subject: "HTTP Reverse Shell"
-keywords: [reverse shell, python, cybersecurity, http]
-lang: "en"
-titlepage: "true"
-titlepage-rule-color: "FFFFFF"
-titlepage-background: "./background9.pdf"
-...
 # Executive summary
 
 For this project we were tasked with producing a Python reverse HTTP shell.
