@@ -33,23 +33,5 @@ The client has three special command paths:
     * i.e. `^ /etc/hosts`
   * TODO: allow multiple files to be exported
 
-## PCAP Analysis
-
-Downloading File	(tcp.stream eq 21)
-	handshake			-> packet no. 616 - 618
-	http get exploit		-> packet no. 619
-	download starts			-> packet no. 621
-	download ends			-> packet no. 1166
-	http ok				-> packet no. 1167
-
-Sending initial command (tcp.stream eq 26)
-	handshake			-> packet no. 1612 - 1614
-	http get command from server	-> packet no. 1615
-	http ok /w command		-> packet no. 1618
-
-Sending file            (tcp.stream eq 31)
-	handshake			-> packet no. 2001 - 2003
-	reg zip  download starts	-> packet no. 2004
-	reg zip  download ends		-> packet no. 25669
-	http post to send file		-> packet no. 25662
-	http ok ack file transfer	-> packet no. 25673
+## Pandoc compiliation
+`pandoc project1.md -o project.pdf --from markdown --template eisvogel --listing --toc`
